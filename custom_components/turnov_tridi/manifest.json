@@ -1,0 +1,13 @@
+{
+  "domain": "turnov_odpad",
+  "name": "Svoz odpadu Turnov",
+  "codeowners": ["@jirisida"],
+  "documentation": "https://github.com/jirisida/turnov_tridi",
+  "dependencies": [],
+  "requirements": [
+    "requests>=2.0.0",
+    "beautifulsoup4>=4.0.0"
+  ],
+  "version": "1.0.0",
+  "iot_class": "cloud_polling"
+}
