@@ -12,6 +12,16 @@ Integrace pro získání termínů svozu odpadu z webu [turnovtridi.cz](https://
 
 ## Konfigurace
 
+### Parametry
+
+| Parametr | Povinný | Popis | Výchozí |
+| :--- | :---: | :--- | :--- |
+| `platform` | ✅ | Musí být `turnov_odpad`. | - |
+| `street` | ✅ | Název ulice v Turnově. Musí se přesně shodovat s našeptávačem na webu turnovtridi.cz. | - |
+| `name` | ❌ | Vlastní název senzoru v HA. | Svoz odpadu Turnov |
+| `language` | ❌ | Jazyk pro stavy senzoru (`cz` nebo `en`). | `cz` |
+| `scan_interval`| ❌ | Jak často aktualizovat data (v sekundách). | `3600` (1h) |
+
 Přidejte do souboru `configuration.yaml`:
 
 ```yaml
@@ -22,12 +32,3 @@ sensor:
     # scan_interval: 86400 (volitelné, default je 1h, doporučuji nastavit vyšší)
 
 
-### Parametry
-
-| Parametr | Povinný | Popis | Výchozí |
-| :--- | :---: | :--- | :--- |
-| `platform` | ✅ | Musí být `turnov_odpad`. | - |
-| `street` | ✅ | Název ulice v Turnově. Musí se přesně shodovat s našeptávačem na webu turnovtridi.cz. | - |
-| `name` | ❌ | Vlastní název senzoru v HA. | Svoz odpadu Turnov |
-| `language` | ❌ | Jazyk pro stavy senzoru (`cz` nebo `en`). | `cz` |
-| `scan_interval`| ❌ | Jak často aktualizovat data (v sekundách). | `3600` (1h) |
