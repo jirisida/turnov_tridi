@@ -8,17 +8,16 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DOMAIN
+# Import konstant
+from .const import DOMAIN, URL_PAGE, DEFAULT_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
 DATA_SCHEMA = vol.Schema({
     vol.Required("street"): str,
-    vol.Optional("name", default="Svoz odpadu Turnov"): str,
+    vol.Optional("name", default=DEFAULT_NAME): str,
     vol.Optional("language", default="cz"): vol.In(["cz", "en"]),
 })
-
-URL_PAGE = "https://www.turnovtridi.cz/kdy-kde-svazime-odpad"
 
 async def validate_input(hass: HomeAssistant, data: dict) -> dict:
     """Ověří spojení a vygeneruje název."""
@@ -27,6 +26,7 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict:
     
     def _test_connection():
         try:
+            # Používáme URL z const.py
             response = requests.get(
                 URL_PAGE, 
                 params={"combine": street, "field_datum_svozu_value": today},
@@ -49,7 +49,7 @@ class TurnovOdpadConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    async def async_step_import(self, import_config):
+    async def async_step_import(self, import_config: dict) -> FlowResult:
         """Zpracování dat z YAML."""
         await self.async_set_unique_id(import_config["street"])
         self._abort_if_unique_id_configured()

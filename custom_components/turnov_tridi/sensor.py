@@ -2,7 +2,6 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 import datetime
-from datetime import timedelta
 import re
 
 from homeassistant.components.sensor import SensorEntity
@@ -10,34 +9,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+# Import konstant
+from .const import URL_PAGE, SCAN_INTERVAL, MONTHS, TRANSLATIONS, DEFAULT_NAME
+
 _LOGGER = logging.getLogger(__name__)
-
-# Interval aktualizace: 1 hodina (4 hodiny je taky OK, šetří to web)
-SCAN_INTERVAL = timedelta(hours=12)
-
-URL_PAGE = "https://www.turnovtridi.cz/kdy-kde-svazime-odpad"
-
-MONTHS = {
-    "Leden": 1, "Únor": 2, "Březen": 3, "Duben": 4, "Květen": 5, "Červen": 6,
-    "Červenec": 7, "Srpen": 8, "Září": 9, "Říjen": 10, "Listopad": 11, "Prosinec": 12
-}
-
-TRANSLATIONS = {
-    "cz": {
-        "mixed": "Směsný",
-        "bio": "Bio",
-        "paper": "Papír",
-        "plastic": "Plasty",
-        "unknown": "Neznámý"
-    },
-    "en": {
-        "mixed": "General Waste",
-        "bio": "Bio Waste",
-        "paper": "Paper",
-        "plastic": "Plastic",
-        "unknown": "Unknown"
-    }
-}
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -47,7 +22,8 @@ async def async_setup_entry(
     """Nastavení senzoru z Config Entry."""
     config = entry.data
     street = config["street"]
-    name = config.get("name", "Svoz odpadu Turnov")
+    # Fallback na default z konstant
+    name = config.get("name", DEFAULT_NAME)
     language = config.get("language", "cz")
 
     async_add_entities([TurnovOdpadSensor(name, street, language, entry.entry_id)], True)
@@ -56,7 +32,7 @@ async def async_setup_entry(
 class TurnovOdpadSensor(SensorEntity):
     """Reprezentace senzoru."""
 
-    def __init__(self, name, street, language, entry_id):
+    def __init__(self, name: str, street: str, language: str, entry_id: str) -> None:
         self._attr_name = name
         self._street = street
         self._language = language
@@ -65,7 +41,7 @@ class TurnovOdpadSensor(SensorEntity):
         self._attr_native_value = None
         self._attr_extra_state_attributes = {}
 
-    def update(self):
+    def update(self) -> None:
         """Spuštění stahování."""
         data = self._fetch_data()
         
@@ -76,7 +52,7 @@ class TurnovOdpadSensor(SensorEntity):
         else:
             self._attr_native_value = TRANSLATIONS[self._language]["unknown"]
 
-    def _fetch_data(self):
+    def _fetch_data(self) -> list[dict] | None:
         today = datetime.date.today().strftime("%Y-%m-%d")
         headers = {"User-Agent": "Home Assistant Integration / TurnovOdpad"}
         params = {"combine": self._street, "field_datum_svozu_value": today}
