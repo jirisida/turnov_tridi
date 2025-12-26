@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Turnov Waste Collection Setup",
+        "description": "Enter the exact street name as used on turnovtridi.cz",
+        "data": {
+          "street": "Street Name",
+          "name": "Sensor Name",
+          "language": "Output Language (cz/en)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Connection failed or street not found."
+    },
+    "abort": {
+      "already_configured": "This street is already configured."
+    }
+  }
+}

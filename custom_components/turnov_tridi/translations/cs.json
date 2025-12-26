@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Nastavení svozu odpadu Turnov",
+        "description": "Zadejte přesný název ulice podle webu turnovtridi.cz",
+        "data": {
+          "street": "Ulice",
+          "name": "Název senzoru",
+          "language": "Jazyk výstupu (cz/en)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nepodařilo se připojit nebo ulice nebyla nalezena."
+    },
+    "abort": {
+      "already_configured": "Tato ulice už je nakonfigurována."
+    }
+  }
+}

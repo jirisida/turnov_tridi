@@ -2,32 +2,20 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 import datetime
-from datetime import timedelta # Důležitý import pro interval
+from datetime import timedelta
 import re
-import voluptuous as vol
 
-from homeassistant.components.sensor import SensorEntity, PLATFORM_SCHEMA
-from homeassistant.const import CONF_NAME
-import homeassistant.helpers.config_validation as cv
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 _LOGGER = logging.getLogger(__name__)
 
-# --- NASTAVENÍ VÝCHOZÍHO INTERVALU ---
-# Pokud uživatel v YAML nezadá jinak, aktualizuje se každou hodinu
-SCAN_INTERVAL = timedelta(hours=1)
+# Interval aktualizace: 1 hodina (4 hodiny je taky OK, šetří to web)
+SCAN_INTERVAL = timedelta(hours=12)
 
-# Konstanty
-DEFAULT_NAME = "Svoz odpadu Turnov"
-CONF_STREET = "street"
-CONF_LANGUAGE = "language"
 URL_PAGE = "https://www.turnovtridi.cz/kdy-kde-svazime-odpad"
-
-# Validace konfigurace
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_STREET): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_LANGUAGE, default="cz"): vol.In(["cz", "en"]),
-})
 
 MONTHS = {
     "Leden": 1, "Únor": 2, "Březen": 3, "Duben": 4, "Květen": 5, "Červen": 6,
@@ -51,28 +39,34 @@ TRANSLATIONS = {
     }
 }
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    """Funkce pro vytvoření senzoru."""
-    street = config.get(CONF_STREET)
-    name = config.get(CONF_NAME)
-    language = config.get(CONF_LANGUAGE)
-    
-    add_entities([TurnovOdpadSensor(name, street, language)], True)
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Nastavení senzoru z Config Entry."""
+    config = entry.data
+    street = config["street"]
+    name = config.get("name", "Svoz odpadu Turnov")
+    language = config.get("language", "cz")
+
+    async_add_entities([TurnovOdpadSensor(name, street, language, entry.entry_id)], True)
 
 
 class TurnovOdpadSensor(SensorEntity):
     """Reprezentace senzoru."""
 
-    def __init__(self, name, street, language):
+    def __init__(self, name, street, language, entry_id):
         self._attr_name = name
         self._street = street
         self._language = language
-        self._attr_unique_id = f"turnov_odpad_{street.replace(' ', '_').lower()}"
+        self._attr_unique_id = f"{entry_id}_{street}" 
         self._attr_icon = "mdi:trash-can"
         self._attr_native_value = None
         self._attr_extra_state_attributes = {}
 
     def update(self):
+        """Spuštění stahování."""
         data = self._fetch_data()
         
         if data:
@@ -84,13 +78,8 @@ class TurnovOdpadSensor(SensorEntity):
 
     def _fetch_data(self):
         today = datetime.date.today().strftime("%Y-%m-%d")
-        headers = {
-            "User-Agent": "Home Assistant Integration / TurnovOdpad",
-        }
-        params = {
-            "combine": self._street,
-            "field_datum_svozu_value": today
-        }
+        headers = {"User-Agent": "Home Assistant Integration / TurnovOdpad"}
+        params = {"combine": self._street, "field_datum_svozu_value": today}
 
         try:
             response = requests.get(URL_PAGE, params=params, headers=headers, timeout=20)
@@ -117,14 +106,10 @@ class TurnovOdpadSensor(SensorEntity):
                     type_id = "unknown"
                     icon = "mdi:help"
 
-                    if "Směsný" in text: 
-                        type_id = "mixed"; icon = "mdi:trash-can"
-                    elif "Bio" in text: 
-                        type_id = "bio"; icon = "mdi:leaf"
-                    elif "Papír" in text: 
-                        type_id = "paper"; icon = "mdi:newspaper"
-                    elif "Plasty" in text or "Plast" in text: 
-                        type_id = "plastic"; icon = "mdi:recycle"
+                    if "Směsný" in text: type_id = "mixed"; icon = "mdi:trash-can"
+                    elif "Bio" in text: type_id = "bio"; icon = "mdi:leaf"
+                    elif "Papír" in text: type_id = "paper"; icon = "mdi:newspaper"
+                    elif "Plasty" in text or "Plast" in text: type_id = "plastic"; icon = "mdi:recycle"
 
                     final_name = TRANSLATIONS[self._language].get(type_id, "Unknown")
 
@@ -134,9 +119,8 @@ class TurnovOdpadSensor(SensorEntity):
                         "icon": icon,
                         "raw": text
                     })
-            
             return results
 
         except Exception as e:
-            _LOGGER.error(f"Chyba při stahování dat pro {self._street}: {e}")
+            _LOGGER.error(f"Chyba při stahování dat: {e}")
             return None
