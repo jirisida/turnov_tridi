@@ -5,7 +5,7 @@
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
 
 **[CZ]** Integrace pro Home Assistant, která stahuje termíny svozu odpadu z webu [turnovtridi.cz](https://www.turnovtridi.cz). 
-Podporuje nastavení přes **grafické rozhraní (UI)** i přes YAML.
+Podporuje nastavení přes **grafické rozhraní (Config Flow)** i přes YAML.
 
 **[EN]** Home Assistant integration that retrieves waste collection schedules from [turnovtridi.cz](https://www.turnovtridi.cz). 
 Supports configuration via **UI (Config Flow)** and YAML.
