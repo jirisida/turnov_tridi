@@ -44,7 +44,7 @@ turnov_odpad:
     name: "Odpad Babička"
 ```
 
-### 3. Část: CZ Karty a Automatizace
+### 4. Část: CZ Karty a Automatizace
 
 ### Karta na Dashboard (Lovelace)
 
@@ -84,7 +84,7 @@ action:
       message: "{{ state_attr('sensor.svoz_odpadu_turnov', 'data')[0]['type'] }}"
 ```
 
-### 4. Část: EN Instructions
+### 5. Část: EN Instructions
 
 ## 🇬🇧 Instructions (English)
 
@@ -111,7 +111,7 @@ turnov_odpad:
     name: "Waste Collection"
     language: "en"
 ```
-### 5. Část: Licence
+### 6. Část: Licence
 
 ## License
 
