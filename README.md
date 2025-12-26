@@ -46,7 +46,7 @@ turnov_odpad:
 
 ### 4. Část: CZ Karty a Automatizace
 
-### Karta na Dashboard (Lovelace)
+#### Karta na Dashboard (Lovelace)
 
 Pro zobrazení seznamu svozů použijte kartu **Markdown**. V příkladu jsou zobrazeny následující 3 svozy.
 
@@ -64,7 +64,7 @@ content: |
   {% endif %}
 ```
 
-### Automatizace: Upozornění na mobil
+#### Automatizace: Upozornění na mobil
 
 Pošle notifikaci den předem v 18:00.
 
@@ -84,7 +84,7 @@ action:
       message: "{{ state_attr('sensor.svoz_odpadu_turnov', 'data')[0]['type'] }}"
 ```
 
-### 5. Část: EN Instructions
+
 
 ## 🇬🇧 Instructions (English)
 
@@ -111,10 +111,9 @@ turnov_odpad:
     name: "Waste Collection"
     language: "en"
 ```
-### 6. Část: Licence
 
 ## License
 
 MIT License
 
-Copyright (c) 2025 @Jirisida
+Copyright (c) 2025 @xsida
