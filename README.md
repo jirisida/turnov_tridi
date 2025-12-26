@@ -117,4 +117,4 @@ turnov_odpad:
 
 MIT License
 
-Copyright (c) 2025 [jirisida]
+Copyright (c) 2025 @Jirisida
