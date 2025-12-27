@@ -2,7 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)]()
 
 **[CZ]** Integrace pro Home Assistant, která stahuje termíny svozu odpadu z webu [turnovtridi.cz](https://www.turnovtridi.cz). 
 Podporuje nastavení přes **grafické rozhraní (Config Flow)** i přes YAML.
@@ -74,9 +74,9 @@ trigger:
   - platform: time
     at: "18:00:00"
 condition:
-  - condition: template
-    value_template: >-
-      {{ state_attr('sensor.svoz_odpadu_turnov', 'data')[0]['date'] == (now() + timedelta(days=1)).strftime('%Y-%m-%d') }}
+  - condition: state
+      entity_id: binary_sensor.svoz_odpadu_turnov_zitra
+      state: "on"
 action:
   - service: notify.mobile_app_vas_telefon
     data:
