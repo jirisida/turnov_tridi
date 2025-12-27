@@ -19,7 +19,7 @@ DATA_SCHEMA = vol.Schema({
 })
 
 async def validate_input(hass: HomeAssistant, data: dict) -> dict:
-    """Ověří spojení a vygeneruje název (sdílená funkce)."""
+    """Ověří spojení a vygeneruje název."""
     street = data["street"]
     today = datetime.date.today().strftime("%Y-%m-%d")
     
@@ -42,13 +42,13 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict:
 
 
 class TurnovOdpadConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Hlavní konfigurační flow (při přidávání)."""
+    """Hlavní konfigurační flow."""
     VERSION = 1
 
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        """Spustí Options Flow při kliknutí na Konfigurovat."""
+        """Spustí Options Flow."""
         return TurnovOdpadOptionsFlowHandler(config_entry)
 
     async def async_step_import(self, import_config: dict) -> FlowResult:
@@ -78,27 +78,38 @@ class TurnovOdpadConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class TurnovOdpadOptionsFlowHandler(config_entries.OptionsFlow):
-    """Handler pro změnu nastavení (tlačítko Konfigurovat)."""
+    """Handler pro změnu nastavení."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self.config_entry = config_entry
+        """Inicializace."""
+        # Bezpečné uložení config entry
+        self._config_entry = config_entry
+        # Volání rodiče bez argumentů (bezpečnější pro různé verze HA)
+        try:
+            super().__init__()
+        except Exception:
+            pass # Ignorujeme chybu v super initu, pokud by nastala
 
     async def async_step_init(self, user_input=None) -> FlowResult:
-        """Zobrazí formulář s předvyplněnými hodnotami."""
+        """Zobrazí formulář."""
         if user_input is not None:
-            # Aktualizujeme nastavení a reloadneme integraci
+            # Uložení změn
             self.hass.config_entries.async_update_entry(
-                self.config_entry, data=user_input
+                self._config_entry, data=user_input
             )
             return self.async_create_entry(title="", data=None)
 
-        # Načteme aktuální hodnoty jako výchozí
-        current_config = self.config_entry.data
+        # Načtení stávajících hodnot (bezpečně s .get a fallbackem)
+        current_config = self._config_entry.data
         
+        street_default = current_config.get("street", "")
+        name_default = current_config.get("name", DEFAULT_NAME)
+        lang_default = current_config.get("language", "cz")
+
         options_schema = vol.Schema({
-            vol.Required("street", default=current_config.get("street")): str,
-            vol.Optional("name", default=current_config.get("name", DEFAULT_NAME)): str,
-            vol.Optional("language", default=current_config.get("language", "cz")): vol.In(["cz", "en"]),
+            vol.Required("street", default=street_default): str,
+            vol.Optional("name", default=name_default): str,
+            vol.Optional("language", default=lang_default): vol.In(["cz", "en"]),
         })
 
         return self.async_show_form(step_id="init", data_schema=options_schema)
