@@ -86,6 +86,7 @@ class TurnovOdpadCoordinator(DataUpdateCoordinator):
                 results.append({
                     "date": date_obj.isoformat(),
                     "type": final_name,
+                    "type_id": type_id,
                     "icon": icon,
                     "raw": text
                 })

@@ -31,3 +31,5 @@ TRANSLATIONS = {
         "unknown": "Unknown"
     }
 }
+
+WASTE_TYPES = ["mixed", "bio", "paper", "plastic"]
