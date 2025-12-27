@@ -2,7 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.1.2-blue.svg)]()
 
 **[CZ]** Integrace pro Home Assistant, která stahuje termíny svozu odpadu z webu [turnovtridi.cz](https://www.turnovtridi.cz). 
 Podporuje nastavení přes **grafické rozhraní (Config Flow)** i přes YAML.
