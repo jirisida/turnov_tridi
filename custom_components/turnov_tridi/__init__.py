@@ -8,7 +8,7 @@ import homeassistant.helpers.config_validation as cv
 from .const import DOMAIN
 from .coordinator import TurnovOdpadCoordinator
 
-PLATFORMS: list[str] = ["sensor"]
+PLATFORMS: list[str] = ["sensor", "binary_sensor"]
 
 # Schéma pro YAML konfiguraci
 CONFIG_SCHEMA = vol.Schema({
